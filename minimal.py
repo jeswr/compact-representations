@@ -1,4 +1,4 @@
-RANGES = 12
+RANGES = 10
 SET_RANGES = RANGES ** 3 - 1
 
 def encode_triple(triple):
@@ -74,3 +74,13 @@ print(has_pattern(graph, (0, None, 8))) # True
 print(has_pattern(graph, (1, None, 8))) # False
 print(has_any_patterns(graph, [(0, None, 8), (1, None, 8)])) # True
 print(has_any_patterns(graph, [(1, None, 8), (1, None, 9)])) # False
+
+print(graph)
+
+C = 1_114_111
+
+def encode(n): 
+  if not n: return "0"
+  return encode(n//C).lstrip("0") + chr(n%C)
+
+print(encode(graph))

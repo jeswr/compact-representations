@@ -10,25 +10,80 @@ It is possible to represent an entire graph as an integer. For instance we can d
 RANGES = 12
 SET_RANGES = RANGES ** 3 - 1
 
+def encode_triple(triple):
+  s, p, o = triple
+  return s + p * RANGES + o * RANGES ** 2
+
 def encode_graph(triples):
    # Create binary representation where bit i is 1 if i is in the set
   encoded = 0
-  for s, p, o in triples:
-    encoded |= (1 << (s + p * RANGES + o * RANGES ** 2))  # Set bit at position 'num'
+  for triple in triples:
+    encoded |= (1 << encode_triple(triple))  # Set bit at position 'num'
   
   return encoded
 
-print(encode_graph([
+def has_triple(graph, triple):
+  return graph & (1 << encode_triple(triple)) != 0
+
+def has_pattern(graph, pattern):
+  s, p, o = pattern
+    # Create a mask with 1s at all positions that match the pattern
+  mask = 0
+  
+  # Generate all possible triples that match the pattern
+  s_values = [s] if s is not None else range(RANGES)
+  p_values = [p] if p is not None else range(RANGES)
+  o_values = [o] if o is not None else range(RANGES)
+  
+  # Set bits in mask for all matching positions
+  for s_val in s_values:
+    for p_val in p_values:
+      for o_val in o_values:
+        mask |= (1 << encode_triple((s_val, p_val, o_val)))
+
+  # Check if any matching position has a bit set in the graph
+  return (graph & mask) != 0
+
+def has_any_patterns(graph, patterns):
+  """Check if any of the given patterns exist in the graph using a single mask."""
+  # Create a combined mask with 1s at all positions that match any pattern
+  combined_mask = 0
+  
+  for pattern in patterns:
+    s, p, o = pattern
+  
+    # Generate all possible triples that match this pattern
+    s_values = [s] if s is not None else range(RANGES)
+    p_values = [p] if p is not None else range(RANGES)
+    o_values = [o] if o is not None else range(RANGES)
+  
+    # Set bits in combined_mask for all matching positions
+    for s_val in s_values:
+      for p_val in p_values:
+        for o_val in o_values:
+          combined_mask |= (1 << encode_triple((s_val, p_val, o_val)))
+  
+  # Check if any matching position has a bit set in the graph
+  return (graph & combined_mask) != 0
+
+TRIPLES = [
   (0, 2, 5),
   (0, 2, 6),
   (0, 2, 7),
   (0, 3, 8),
   (0, 3, 9),
-  (0, 4, 10),
-  (1, 4, 11),
-]))
+]
 
-// 381929249340500909518673926763019762113122063917922999147193572988224613193858636347368824440315729894269011655449184206466917222667305063276702809456926264585188589886938850162121178270409148086600312013604911089539626531473689532902477513279323740536728401227413098662566723111807316619568926342801121595240993844489054534304543672119482675096813174903607431974471380825928300171479110496490692678140113141079553830172803761664365766669841955361078534772944535177957570495238678628184096768
+graph = encode_graph(TRIPLES)
+for triple in TRIPLES:
+  print(has_triple(graph, triple)) # True
+
+print(has_triple(graph, (0, 2, 8))) # False
+print(has_pattern(graph, (0, None, 8))) # True
+print(has_pattern(graph, (1, None, 8))) # False
+print(has_any_patterns(graph, [(0, None, 8), (1, None, 8)])) # True
+print(has_any_patterns(graph, [(1, None, 8), (1, None, 9)])) # False
+
 ```
 
 This also means that it is possible to prove that certain triples exist in the graph by proving that the signed integer satisfies particular numeric properties.
