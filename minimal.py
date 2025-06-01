@@ -6,7 +6,7 @@ def encode_triple(triple):
   return s + p * RANGES + o * RANGES ** 2
 
 def encode_graph(triples):
-   # Create binary representation where bit i is 1 if i is in the set
+  # Create binary representation where bit i is 1 if i is in the set
   encoded = 0
   for triple in triples:
     encoded |= (1 << encode_triple(triple))  # Set bit at position 'num'
@@ -18,7 +18,7 @@ def has_triple(graph, triple):
 
 def has_pattern(graph, pattern):
   s, p, o = pattern
-    # Create a mask with 1s at all positions that match the pattern
+  # Create a mask with 1s at all positions that match the pattern
   mask = 0
   
   # Generate all possible triples that match the pattern
