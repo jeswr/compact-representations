@@ -76,6 +76,44 @@ class TripleEncoder:
     def get_max_encoded_value(self):
         """Get the maximum possible encoded value."""
         return self.ranges[0] * self.ranges[1] * self.ranges[2] - 1
+    
+    def get_encoded_value_range(self):
+        """
+        Get the complete range of possible encoded values.
+        
+        Returns:
+            tuple: (min_value, max_value) where min_value is always 0
+        """
+        min_value = 0  # Always 0 when all triple values are at minimum (0, 0, 0)
+        max_value = self.get_max_encoded_value()
+        return (min_value, max_value)
+    
+    def get_total_possible_encodings(self):
+        """
+        Get the total number of possible unique encodings.
+        
+        Returns:
+            int: total number of unique triples that can be encoded
+        """
+        return self.ranges[0] * self.ranges[1] * self.ranges[2]
+    
+    def get_encoding_info(self):
+        """
+        Get comprehensive information about the encoding space.
+        
+        Returns:
+            dict: information about the encoding including ranges, totals, etc.
+        """
+        min_val, max_val = self.get_encoded_value_range()
+        total_encodings = self.get_total_possible_encodings()
+        
+        return {
+            'max_triple_values': self.max_values,
+            'value_ranges': self.ranges,
+            'encoded_value_range': (min_val, max_val),
+            'total_possible_encodings': total_encodings,
+            'encoding_efficiency': f"{total_encodings} unique values using {max_val + 1} integers"
+        }
 
 
 def example_usage():
@@ -105,7 +143,17 @@ def example_usage():
         print(f"{triple} -> {encoded} -> {decoded} ✓")
     
     print(f"\nMaximum encoded value: {encoder.get_max_encoded_value()}")
-    print(f"Total possible unique triples: {encoder.get_max_encoded_value() + 1}")
+    print(f"Total possible unique triples: {encoder.get_total_possible_encodings()}")
+    
+    # Show the complete range information
+    min_val, max_val = encoder.get_encoded_value_range()
+    print(f"Encoded value range: {min_val} to {max_val}")
+    
+    # Show comprehensive encoding information
+    print("\nEncoding Information:")
+    info = encoder.get_encoding_info()
+    for key, value in info.items():
+        print(f"  {key}: {value}")
 
 
 if __name__ == "__main__":
